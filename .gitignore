@@ -1,0 +1,4 @@
+.DS_Store
+node_modules
+localrun.sh
+npm-debug.log

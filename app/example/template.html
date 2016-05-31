@@ -1,0 +1,137 @@
+<html>
+<head>
+  <title>QnR Code 登录模板</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <meta content="yes" name="apple-mobile-web-app-capable">
+  <meta content="yes" name="apple-touch-fullscreen">
+  <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+	<meta http-equiv="keywords" content="公司 论坛 互动">
+	<meta http-equiv="description" content="论坛首页">
+  <script type="text/javascript" src="js/socket.io.js" ></script>
+  <style>
+    body {
+      margin: 0px;
+      padding: 0;
+    }
+
+    .container {
+      margin-top: 80px;
+      overflow: hidden;
+    }
+
+    .QnR-code-wrap {
+      border: 1px solid #333;
+      padding: 10px;
+    }
+
+    .note {
+      margin-top: 80px;
+    }
+
+    @media screen and (max-width:420px) {
+      .container {
+      }
+
+      .QnR-code-wrap {
+        width: 280px;
+      }
+
+      #QnR-image {
+        width: 280px;
+        height: 280px;
+      }
+    }
+
+    @media screen and (max-width:350px) {
+      .container {
+      }
+
+      .QnR-code-wrap {
+        width: 240px;
+      }
+
+      #QnR-image {
+        width: 240px;
+        height: 240px;
+      }
+    }
+
+    @media screen and (max-width:325px) {
+      .container {
+      }
+
+      .QnR-code-wrap {
+        width: 200px;
+      }
+
+      #QnR-image {
+        width: 200px;
+        height: 200px;
+      }
+    }
+
+    #login-suc-note {
+      display: none;
+    }
+
+  </style>
+  <script>
+    var ws;
+    if (window.addEventListener) {
+      addEventListener('load',function() {
+        loadHandler();
+      });
+    }
+
+    if (window.attachEvent) {
+      attachEvent('load',function() {
+        loadHandler();
+      });
+    }
+
+    function loadHandler() {
+      if (!window.WebSocket) {
+        alert("去死吧，Jason说了，你的电脑不支持WebSocket就一边玩去");
+        return;
+      }
+
+      ws = io.connect("http://localhost:3000");
+      ws.emit('connected', "lala");
+      ws.on('qrimage', function(imageUrl) {
+        if (imageUrl) {
+          document.getElementById("QnR-image").src= imageUrl;
+        }
+      });
+
+      ws.on('login', function(token) {
+        console.log(token);
+        document.getElementById("confirm-page").style.display = "none";
+        document.getElementById("login-suc-note").style.display = "block";
+        setCookie("token",token,0.2);
+      });
+
+      function setCookie(name, value, expire_day) {
+        var expires_time = expire_day || 1;
+        var exp = new Date();
+        exp.setTime(exp.getTime() + expires_time*24*3600000);
+        document.cookie = name+"="+value+";expires=" + exp.toGMTString();
+      }
+    }
+
+  </script>
+</head>
+<body>
+  <center class="container" id="container">
+    <div class="QnR-code-wrap">
+      <img id="QnR-image" width="100%" src="http://img3.douban.com/icon/u86703958-3.jpg" />
+    </div>
+    <div class="note">
+      请扫描登录
+    </div>
+  </center>
+  <div id="login-suc-note">
+    登录成功。。。
+  </div>
+</body>
+</html>
